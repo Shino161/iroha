@@ -93,7 +93,7 @@ const Home = () => {
           <div className="color-block">
             <span className="color" style={{ backgroundColor: rgb }}></span>
             <div className="color-code">
-              <span onClick={ handleCopy(rgb) }>{rgb}</span>
+              <span>{rgb}</span>
               <span>{hex}</span>
             </div>
             <span className="tips" style={{ backgroundColor: rgb }}>&nbsp;COLOR</span>
