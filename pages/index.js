@@ -1,133 +1,131 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import Head from '../components/head'
 import Nav from '../components/nav'
 
 const Home = () => {
-  const [date, setDate] = useState(null);
-
-  useEffect(() => {
-    async function getDate() {
-      const res = await fetch('/api/date');
-      const newDate = await res.json();
-      setDate(newDate);
+  const canvas = useRef(null);
+  const input = useRef(null);
+  const [ctx, setCtx] = useState(null);
+  const [rgb, setRgb] = useState(null);
+  const [hex, setHex] = useState(null);
+  const rgb2Hex = (color) => {
+    var rgb = color.split(',');
+    var r = parseInt(rgb[0].split('(')[1]);
+    var g = parseInt(rgb[1]);
+    var b = parseInt(rgb[2].split(')')[0]);
+    var hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    return hex;
+  }
+  const handlePickColor = (e) => {
+    let onePixel = ctx.getImageData(e.nativeEvent.offsetX, e.nativeEvent.offsetY, 1, 1).data
+    // this.rgba = 'rgba(' + onePixel[0] + ',' + onePixel[1] + ',' + onePixel[2] + ',' + (onePixel[3] / 255) + ')'
+    let rgbValue = 'rgb(' + onePixel[0] + ',' + onePixel[1] + ',' + onePixel[2] + ')';
+    let hexValue = rgb2Hex(rgbValue)
+    setRgb(rgbValue)
+    setHex(hexValue)
+  }
+  const createCanvas = (imgData) => {
+    let cvsDOM = canvas.current
+    let context = cvsDOM.getContext('2d')
+    setCtx(context)
+    let cvsDisplayWidth = cvsDOM.offsetWidth
+    let cvsDisplayHeight = cvsDOM.offsetHeight
+    cvsDOM.width = cvsDisplayWidth
+    cvsDOM.height = cvsDisplayHeight
+    let image = new Image()
+    image.src = imgData
+    image.onload = () => {
+      context.drawImage(image, 0, 0, cvsDisplayWidth, cvsDisplayHeight)
     }
-    getDate();
+  }
+  const handlePaste = () => {
+    input.current.addEventListener('paste', (e) => {
+      var items;
+      if (e.clipboardData && e.clipboardData.items) {
+        items = e.clipboardData.items;
+        if (items) {
+          items = Array.prototype.filter.call(items, (element) => {
+            return element.type.indexOf("image") >= 0;
+          });
+          Array.prototype.forEach.call(items, (item) => {
+            var blob = item.getAsFile();
+            var reader = new FileReader();
+            reader.onloadend = (event) => {
+              createCanvas(event.target.result)
+            };
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    })
+  }
+  // useEffect(() => {
+  //   // ctx变动后触发的effect
+  // }, [ctx])
+  useEffect(() => {
+    handlePaste()
   }, []);
-
   return (
     <div>
-      <Head title="Home" />
-      <Nav />
-
       <div className="hero">
-        <h1 className="title">Welcome to Next!</h1>
-        <p className="description">
-          To get started, edit the <code>pages/index.js</code> or <code>pages/api/date.js</code> files, then save to reload.
-        </p>
-
-        <p className="row date">
-          The date is:&nbsp; {date
-            ? <span><b>{date.date}</b></span>
-            : <span className="loading"></span>}
-        </p>
-
-        <div className='row'>
-          <Link href='https://github.com/zeit/next.js#setup'>
-            <a className='card'>
-              <h3>Getting Started &rarr;</h3>
-              <p>Learn more about Next.js on GitHub and in their examples.</p>
-            </a>
-          </Link>
-          <Link href='https://github.com/zeit/next.js/tree/master/examples'>
-            <a className='card'>
-              <h3>Examples &rarr;</h3>
-              <p>Find other example boilerplates on the Next.js GitHub.</p>
-            </a>
-          </Link>
-          <Link href='https://github.com/zeit/next.js'>
-            <a className='card'>
-              <h3>Create Next App &rarr;</h3>
-              <p>Was this tool helpful? Let us know how we can improve it!</p>
-            </a>
-          </Link>
+        <div className="container">
+          <div className="imgage-block">
+            <canvas ref={canvas} className="canvas" onClick={(e) => { handlePickColor(e) }}></canvas>
+            <input placeholder="粘贴截图" ref={input} className="input-image"></input>
+          </div>
+          <div className="color-block">
+            <span className="color" style={{ backgroundColor: rgb }}></span>
+            <section className="color-code">
+              <p>{rgb}</p>
+              <p>{hex}</p>
+            </section>
+          </div>
         </div>
       </div>
 
       <style jsx>{`
-        .hero {
-          width: 100%;
-          color: #333;
-        }
-        .title {
-          margin: 0;
-          width: 100%;
-          padding-top: 80px;
-          line-height: 1.15;
-          font-size: 48px;
-        }
-        .title,
-        .description {
-          text-align: center;
-        }
-        .row {
-          max-width: 880px;
-          margin: 80px auto 40px;
+        .container {
+          width: 600px;
+          height: 600px;
+          box-shadow: 0px 0px 10px 2px #ddd;
+          border-radius: 2px;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
           display: flex;
-          flex-direction: row;
-          justify-content: space-around;
+          flex-direction: column;
+          padding: 5px;
+          box-sizing: border-box;
         }
-        .date {
-          height: 24px;
-          max-width: calc(100% - 32px)
-          text-align: center;
+        .imgage-block {
+          width: 100%;  
+        }
+        .canvas {
+          width: 100%;
+          height: 300px;
+          cursor: crosshair;
+        }
+        .input-image {
+          margin-top: 30px;
+          width: 200px;
+        }
+        .color-block {
+          margin-top: 30px;
           display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0 16px;
         }
-        .date p {
-          text-align: center;
+        .color {
+          width: 60px;
+          height: 60px;
+          color: #fff;
+          border-radius: 2px;
+          display: block
+
         }
-        .date span {
-          width: 176px;
-          text-align: center;
-        }
-        @keyframes Loading {
-          0%{background-position:0% 50%}
-          50%{background-position:100% 50%}
-          100%{background-position:0% 50%}
-        }
-        .date .loading {
-          max-width: 100%;
-          height: 24px;
-          border-radius: 4px;
-          display: inline-block;
-          background: linear-gradient(270deg, #D1D1D1, #EAEAEA);
-          background-size: 200% 200%;
-          animation: Loading 2s ease infinite;
-        }
-        .card {
-          padding: 18px 18px 24px;
-          width: 220px;
-          text-align: left;
-          text-decoration: none;
-          color: #434343;
-          border: 1px solid #9b9b9b;
-        }
-        .card:hover {
-          border-color: #067df7;
-        }
-        .card h3 {
-          margin: 0;
-          color: #067df7;
-          font-size: 18px;
-        }
-        .card p {
-          margin: 0;
-          padding: 12px 0 0;
-          font-size: 13px;
-          color: #333;
+        .color-code {
+          color: #3d3d3d;
+          margin-left: 10px;
         }
       `}</style>
     </div>
