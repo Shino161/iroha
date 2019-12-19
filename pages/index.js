@@ -163,6 +163,7 @@ const Home = () => {
           cursor: text;
         }
         .tips {
+          user-select: none;
           color: #fff;
           width: 20px;
           height: 64px;
