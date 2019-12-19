@@ -160,7 +160,7 @@ const Home = () => {
         .color-code span{
           line-height: 32px;
           display:block;
-          cursor: copy
+          cursor: text;
         }
         .tips {
           color: #fff;
