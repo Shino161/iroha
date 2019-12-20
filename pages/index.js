@@ -28,6 +28,10 @@ const Home = () => {
     return hex;
   }
   const handlePickColor = (e) => {
+    if (!ctx) {
+      console.log('请截图！');
+      return
+    }
     let onePixel = ctx.getImageData(e.nativeEvent.offsetX, e.nativeEvent.offsetY, 1, 1).data
     // this.rgba = 'rgba(' + onePixel[0] + ',' + onePixel[1] + ',' + onePixel[2] + ',' + (onePixel[3] / 255) + ')'
     let rgbValue = 'rgb(' + onePixel[0] + ',' + onePixel[1] + ',' + onePixel[2] + ')';
@@ -46,7 +50,13 @@ const Home = () => {
     let image = new Image()
     image.src = imgData
     image.onload = () => {
-      context.drawImage(image, 0, 0, cvsDisplayWidth, cvsDisplayHeight)
+      let ratio = image.width / image.height
+      if (ratio > 1) {
+        context.drawImage(image, 0, 0, cvsDisplayWidth, image.height)  
+      }else {
+        context.drawImage(image, 0, 0, image.width, cvsDisplayHeight)  
+      }
+      
     }
   }
   const handlePaste = () => {
@@ -70,9 +80,6 @@ const Home = () => {
       }
     })
   }
-  // useEffect(() => {
-  //   // ctx变动后触发的effect
-  // }, [ctx])
   useEffect(() => {
     handlePaste()
   }, []);
@@ -81,14 +88,19 @@ const Home = () => {
       <Nav></Nav>
       <div className="container">
         <section className="left-side">
-          <p>1.使用一些带有截图功能的工具，Windows 下 Ctrl + Shift + A，Mac OS 下 CMD + Shift + A </p>
+          <p>1.使用一些带有截图功能的工具<br/>Windows 下 Ctrl + Shift + A<br/>Mac OS 下 CMD + Shift + A </p>
           <p>2.粘贴截图到输入框<input placeholder="粘贴截图" ref={input} className="screenshot-input"></input></p>
           <p>3.在右侧的图片选取取色的点</p>
         </section>
         <div className="right-side">
-          <div className="imgage-block">
+          <div className="imgage-block" >
             <div className="canvas-bg"></div>
-            <canvas ref={canvas} className="canvas" onClick={(e) => { handlePickColor(e) }}></canvas>
+            <canvas 
+              ref={canvas} 
+              className="canvas" 
+              onClick={(e) => { handlePickColor(e) }} 
+              >
+            </canvas>
           </div>
           <div className="color-block">
             <span className="color" style={{ backgroundColor: rgb }}></span>
@@ -111,9 +123,10 @@ const Home = () => {
         }
         .left-side {
           flex:1;
+          font-size: 20px;
           margin-right: 50px;
           color: #0d1a26;
-          line-height: 30px;
+          line-height: 35px;
         }
         .screenshot-input {
           width: 100px;
@@ -127,12 +140,11 @@ const Home = () => {
           margin-left: 50px;
         }
         .imgage-block {
-          height: 300px;
           box-shadow: 0px 0px 10px 2px #ddd;
           border-radius: 2px;
           flex-direction: column;
-          padding: 5px;
           box-sizing: border-box;
+          padding: 5px;          
         }
         .canvas {
           width: 100%;
@@ -169,7 +181,6 @@ const Home = () => {
           height: 64px;
           writing-mode: vertical-lr;
         }
-        
       `}</style>
     </div>
   )
