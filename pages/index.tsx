@@ -63,6 +63,7 @@ const Home = () => {
     }
   }
   const handlePaste = () => {
+    
     input.current.addEventListener('paste', (e) => {
       let items
       if (e.clipboardData && e.clipboardData.items) {
@@ -83,8 +84,12 @@ const Home = () => {
       }
     })
   }
+  const handleGetInputFocus = () => {
+    input.current.focus()
+  }
   useEffect(() => {
     handlePaste()
+    handleGetInputFocus()
   }, [])
   return (
     <div>
@@ -98,11 +103,11 @@ const Home = () => {
             <span style={{ color: '#531dab' }}>a</span>
           </div>
           <div className="sub-title">
-            <span>截图选取颜色的工具</span>
             <input
               placeholder="粘贴截图"
               ref={input}
               className="screenshot-input"
+              onBlur={handleGetInputFocus}
             ></input>
           </div>
         </div>
@@ -131,7 +136,7 @@ const Home = () => {
         </div>
       </div>
       <div className="line-block" style={{ backgroundColor: rgb }}>
-        <div>Pick Color</div>
+        <div>Just paste your screenshot</div>
       </div>
     </div>
   )

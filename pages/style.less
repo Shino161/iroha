@@ -11,28 +11,16 @@ html {
   margin-top: 50px;
   color: #434343;
   .top {
-    .sub-title {
-      margin: 10px;
-    }
-
     .title {
       margin: 0;
       font-size: 55px;
       font-weight: bold;
     }
   }
-
   .screenshot-input {
-    width: 60px;
-    height: 24px;
-    margin-left: 10px;
-    font-size: 18px;
-    padding-left: 5px;
-    outline: none;
-    &::placeholder {
-      font-weight: 400;
-      font-size: 14px;
-    }
+    position: absolute;
+    opacity: 0;
+    top: -9999px;
   }
 
   .content {
@@ -103,6 +91,7 @@ html {
   background-color: #5dafee;
   div {
     color: #fff;
-    font-size: 200px;
+    margin-top: 50px;
+    font-size: 100px;
   }
 }
