@@ -1,10 +1,5 @@
-module.exports = {
-  webpack: config => {
-    // Fixes npm packages that depend on `fs` module
-    config.node = {
-      fs: 'empty'
-    }
+const withLess = require('@zeit/next-less')
 
-    return config
-  }
-}
+/* Without CSS Modules, with PostCSS */
+module.exports = withLess()
+

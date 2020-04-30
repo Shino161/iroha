@@ -2,12 +2,13 @@ import React from 'react'
 import NextHead from 'next/head'
 import { string } from 'prop-types'
 
-const defaultDescription = ''
+const defaultDescription = 'Color Picker'
 const defaultOGURL = ''
 const defaultOGImage = ''
 
-const Head = props => (
-  <NextHead>
+const Head = props => {
+  
+  return(<NextHead>
     <meta charSet="UTF-8" />
     <title>{props.title || ''}</title>
     <meta
@@ -31,8 +32,8 @@ const Head = props => (
     <meta property="og:image" content={props.ogImage || defaultOGImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-  </NextHead>
-)
+  </NextHead>)
+}
 
 Head.propTypes = {
   title: string,
