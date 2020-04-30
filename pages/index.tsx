@@ -132,6 +132,7 @@ const Home = () => {
               <span>{hex}</span>
               <span>{rgb}</span>
             </div>
+            <span style={{ color: '#bfbfbf'}}>Right click and copy</span>
           </div>
         </div>
       </div>
